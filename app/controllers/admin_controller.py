@@ -27,12 +27,32 @@ def manage_inventory():
     if request.method == 'POST':
         action = request.form.get('action')
         item_id = request.form.get('item_id')
+
         if action == 'add':
             item_name = request.form.get('item_name')
-            Inventory.add_item(item_name)
-            flash('Item added successfully', 'success')
+            item_quantity = request.form.get('item_quantity')
+            item_price = request.form.get('item_price')
+
+            if item_name and item_quantity and item_price:
+                new_item = Inventory(
+                    name=item_name,
+                    quantity=int(item_quantity),
+                    price=float(item_price)
+                )
+                from app import db
+                db.session.add(new_item)
+                db.session.commit()
+                flash('Producto agregado correctamente', 'success')
+            else:
+                flash('Faltan datos para agregar el producto', 'danger')
+
         elif action == 'delete':
-            Inventory.delete_item(item_id)
-            flash('Item deleted successfully', 'success')
-    inventory_items = Inventory.get_all_items()
+            from app import db
+            item = Inventory.query.get(item_id)
+            if item:
+                db.session.delete(item)
+                db.session.commit()
+                flash('Producto eliminado correctamente', 'success')
+
+    inventory_items = Inventory.query.all()
     return render_template('manage_inventory.html', inventory_items=inventory_items)

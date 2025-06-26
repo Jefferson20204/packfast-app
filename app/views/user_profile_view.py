@@ -1,3 +1,6 @@
+from app.models.inventory import Inventory
+from app import db
+
 from flask import Blueprint, render_template, redirect, url_for, request, flash, session
 from flask_login import login_required, current_user
 
@@ -14,16 +17,17 @@ def user_profile():
     if request.method == 'POST' and request.form.get('action') == 'add_item':
         name = request.form.get('item_name')
         quantity = request.form.get('item_quantity')
-        if name and quantity:
-            # Genera un id temporal
-            temp_id = len(session['temp_inventory']) + 1
-            session['temp_inventory'].append({
-                'id': temp_id,
-                'name': name,
-                'quantity': quantity
-            })
-            session.modified = True
-            flash('Producto agregado temporalmente.', 'success')
+        price = request.form.get('item_price')
+        
+        if name and quantity and price:
+            new_item = Inventory(name=name, quantity=int(quantity), price=float(price))
+            db.session.add(new_item)
+            db.session.commit()
+
+            flash('Producto agregado correctamente.', 'success')
+        else:
+            flash('Faltan datos del producto.', 'danger')
+
         return redirect(url_for('user_profile_view.user_profile'))
 
     # Eliminar producto temporal
@@ -35,5 +39,5 @@ def user_profile():
         return redirect(url_for('user_profile_view.user_profile'))
 
     # Renderiza el inventario temporal
-    inventory = session.get('temp_inventory', [])
+    inventory = Inventory.query.all()
     return render_template('user_profile.html', user=current_user, inventory=inventory)
