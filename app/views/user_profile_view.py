@@ -33,10 +33,15 @@ def user_profile():
     # Eliminar producto temporal
     if request.method == 'POST' and request.form.get('action') == 'delete_item':
         item_id = int(request.form.get('item_id'))
-        session['temp_inventory'] = [item for item in session['temp_inventory'] if item['id'] != item_id]
-        session.modified = True
-        flash('Producto eliminado temporalmente.', 'success')
+        item = Inventory.query.get(item_id)
+        if item:
+            db.session.delete(item)
+            db.session.commit()
+            flash('Producto eliminado correctamente.', 'success')
+        else:
+            flash('Producto no encontrado.', 'danger')
         return redirect(url_for('user_profile_view.user_profile'))
+
 
     # Renderiza el inventario temporal
     inventory = Inventory.query.all()

@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}PackFast{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    
     <style>
         header {
             background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
@@ -97,5 +99,9 @@
         <p>&copy; 2023 PackFast. Todos los derechos reservados.</p>
     </footer>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+    <!-- Bootstrap JS Bundle con Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
 </body>
 </html>
